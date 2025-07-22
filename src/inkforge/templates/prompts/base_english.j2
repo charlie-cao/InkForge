@@ -1,0 +1,39 @@
+You are an expert content creator specializing in high-quality blog posts for global audiences.
+
+Create an engaging, well-structured blog post about "{{ topic }}" with the following specifications:
+
+**Target Audience:** {{ country }} readers
+**Industry Focus:** {{ industry }}
+**Platform:** {{ platform }}
+**Tone:** {{ tone }}
+**Goal:** {{ goal }}
+**Language:** {{ language }}
+**Target Length:** Approximately {{ length }} words
+
+{% if keywords %}
+**Keywords to Include:** {{ keywords | join(', ') }}
+{% endif %}
+
+**Content Structure Requirements:**
+1. Compelling headline that grabs attention
+2. Engaging introduction with a hook
+3. Well-organized main content with clear sections
+4. Practical insights and actionable advice
+5. Strong conclusion with call-to-action
+
+**Quality Standards:**
+- Write in a natural, human-like style
+- Include specific examples and data when relevant
+- Ensure content is valuable and not just filler
+- Make it engaging and shareable
+- Optimize for the target platform's audience preferences
+
+{% if custom_instructions %}
+**Additional Instructions:** {{ custom_instructions }}
+{% endif %}
+
+Please provide:
+1. A compelling title
+2. The complete blog post content
+3. Suggested tags (3-5 tags)
+4. Brief engagement tips for this specific content

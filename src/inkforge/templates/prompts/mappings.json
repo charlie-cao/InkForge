@@ -1,0 +1,53 @@
+{
+  "country_templates": {
+    "US": "base_english.j2",
+    "UK": "base_english.j2",
+    "CN": "base_chinese.j2",
+    "JP": "base_japanese.j2",
+    "FR": "base_french.j2",
+    "DE": "base_german.j2",
+    "KR": "base_korean.j2",
+    "IN": "base_english.j2",
+    "BR": "base_portuguese.j2",
+    "ES": "base_spanish.j2"
+  },
+  "platform_modifiers": {
+    "medium": "platform_medium.j2",
+    "zhihu": "platform_zhihu.j2",
+    "twitter": "platform_twitter.j2",
+    "xiaohongshu": "platform_xiaohongshu.j2",
+    "wechat": "platform_wechat.j2",
+    "linkedin": "platform_linkedin.j2",
+    "substack": "platform_substack.j2",
+    "note": "platform_note.j2",
+    "blog": "platform_blog.j2"
+  },
+  "industry_modifiers": {
+    "finance": "industry_finance.j2",
+    "health": "industry_health.j2",
+    "education": "industry_education.j2",
+    "gaming": "industry_gaming.j2",
+    "technology": "industry_technology.j2",
+    "lifestyle": "industry_lifestyle.j2",
+    "business": "industry_business.j2",
+    "travel": "industry_travel.j2",
+    "food": "industry_food.j2",
+    "general": "industry_general.j2"
+  },
+  "tone_modifiers": {
+    "professional": "tone_professional.j2",
+    "casual": "tone_casual.j2",
+    "entertaining": "tone_entertaining.j2",
+    "analytical": "tone_analytical.j2",
+    "inspirational": "tone_inspirational.j2",
+    "neutral": "tone_neutral.j2"
+  },
+  "goal_modifiers": {
+    "engagement": "goal_engagement.j2",
+    "conversion": "goal_conversion.j2",
+    "shares": "goal_shares.j2",
+    "comments": "goal_comments.j2",
+    "followers": "goal_followers.j2",
+    "awareness": "goal_awareness.j2"
+  }
+}
