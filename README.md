@@ -18,6 +18,8 @@ InkForge is an open-source CLI tool that helps content creators generate engagin
 - 📊 **Engagement Optimization**: Built-in strategies to boost likes, shares, and comments
 - 🔧 **Interactive CLI**: User-friendly command-line interface
 - 📄 **Multiple Formats**: Export to Markdown, HTML, JSON, or plain text
+- 💾 **Auto-Save**: Automatic saving in multiple formats with session management
+- 📊 **Session Tracking**: Detailed logging and session history
 - 🧪 **Quality Control**: Built-in content quality scoring and retry mechanisms
 
 ## 🚀 Quick Start
@@ -63,6 +65,12 @@ inkforge generate "Tech Trends 2024" --interactive
 
 # Save to file with specific format
 inkforge generate "Travel Tips" --format html --output travel-post.html
+
+# Auto-save in multiple formats (default: md,html,json)
+inkforge generate "Tech Guide" --save-formats "md,html,txt,json"
+
+# Disable auto-save
+inkforge generate "Quick Note" --no-auto-save
 ```
 
 ## 📖 Documentation
@@ -86,6 +94,8 @@ inkforge generate [TOPIC] [OPTIONS]
 - `--length, -len`: Approximate word count (100-5000)
 - `--format, -f`: Output format (markdown, html, json, plain)
 - `--output, -o`: Output file path
+- `--save-formats`: Comma-separated formats to auto-save (md,html,json,txt)
+- `--auto-save/--no-auto-save`: Enable/disable auto-save (default: enabled)
 - `--interactive, -int`: Interactive mode
 - `--instructions`: Custom instructions for the AI
 
@@ -100,6 +110,15 @@ inkforge config --set openrouter_api_key --value your_key_here
 
 # Reset to defaults
 inkforge config --reset
+
+# View recent sessions
+inkforge sessions --list
+
+# Show session details
+inkforge sessions --show 20241201_143022
+
+# Clean old sessions
+inkforge sessions --clean
 ```
 
 ### Examples
@@ -134,6 +153,56 @@ inkforge generate "The Future of Remote Work" \
   --tone professional \
   --industry business \
   --goal followers
+
+## 💾 Auto-Save and Session Management
+
+InkForge automatically saves all generated content with detailed session tracking:
+
+### Auto-Save Features
+- **Multiple Formats**: Save content in Markdown, HTML, JSON, and plain text simultaneously
+- **Session Organization**: Each session gets a unique ID and directory
+- **Detailed Logging**: Complete generation logs with timing, quality scores, and retry information
+- **Metadata Tracking**: Full request parameters, AI responses, and processing details
+
+### Session Structure
+```
+output/sessions/YYYYMMDD_HHMMSS/
+├── session.log                 # Detailed session log
+├── session_data.json          # Session metadata
+├── gen_HHMMSS/                # Individual generation
+│   ├── metadata.json          # Generation details
+│   ├── prompt.txt             # Used prompt
+│   ├── raw_response.txt       # Raw AI response
+│   ├── content.md             # Markdown format
+│   ├── content.html           # HTML format
+│   ├── content.json           # JSON format
+│   └── content.txt            # Plain text format
+└── ...
+```
+
+### Session Management Commands
+```bash
+# List recent sessions
+inkforge sessions --list
+
+# Show detailed session information
+inkforge sessions --show 20241201_143022
+
+# Clean sessions older than 7 days
+inkforge sessions --clean
+```
+
+### Customizing Auto-Save
+```bash
+# Save only specific formats
+inkforge generate "Topic" --save-formats "md,txt"
+
+# Disable auto-save completely
+inkforge generate "Topic" --no-auto-save
+
+# Default formats (if not specified)
+# md,html,json
+```
 ```
 
 ## 🏗️ Architecture

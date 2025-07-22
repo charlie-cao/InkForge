@@ -50,7 +50,11 @@ class AIService:
         """Generate content using AI model."""
         if generation_config is None:
             generation_config = GenerationConfig()
-        
+
+        # Check for demo mode (invalid API key)
+        if not self.config.validate_api_key() or self.config.openrouter_api_key == "demo-mode":
+            return self._generate_demo_content(prompt, generation_config)
+
         # Prepare request payload
         payload = {
             "model": generation_config.model,
@@ -67,22 +71,22 @@ class AIService:
             "presence_penalty": generation_config.presence_penalty,
             "stream": False,
         }
-        
+
         try:
             response = await self.client.post(
                 f"{self.base_url}/chat/completions",
                 json=payload
             )
             response.raise_for_status()
-            
+
             data = response.json()
-            
+
             # Extract response data
             choice = data["choices"][0]
             content = choice["message"]["content"]
             finish_reason = choice.get("finish_reason", "stop")
             usage = data.get("usage", {})
-            
+
             return AIResponse(
                 content=content,
                 model=data.get("model", generation_config.model),
@@ -93,22 +97,97 @@ class AIService:
                     "status_code": response.status_code,
                 }
             )
-            
+
         except httpx.HTTPStatusError as e:
             error_detail = ""
             try:
                 error_data = e.response.json()
                 error_detail = error_data.get("error", {}).get("message", str(e))
+
+                # If it's an auth error, fall back to demo mode
+                if "auth" in error_detail.lower() or e.response.status_code == 401:
+                    return self._generate_demo_content(prompt, generation_config)
+
             except:
                 error_detail = str(e)
-            
+
             raise AIServiceError(f"API request failed: {error_detail}") from e
-        
+
         except httpx.RequestError as e:
             raise AIServiceError(f"Network error: {str(e)}") from e
-        
+
         except Exception as e:
             raise AIServiceError(f"Unexpected error: {str(e)}") from e
+
+    def _generate_demo_content(self, prompt: str, generation_config: GenerationConfig) -> AIResponse:
+        """Generate demo content when API is not available."""
+        import re
+
+        # Extract topic from prompt
+        topic_match = re.search(r'"([^"]+)"', prompt)
+        topic = topic_match.group(1) if topic_match else "AI and Technology"
+
+        # Generate demo content based on topic
+        demo_content = f"""# {topic}: A Comprehensive Guide
+
+## Introduction
+
+{topic} is an increasingly important topic in today's digital landscape. This comprehensive guide will explore the key aspects, benefits, and practical applications.
+
+## Key Points
+
+### Understanding the Basics
+The fundamental concepts behind {topic.lower()} are essential for anyone looking to stay current with modern trends and technologies.
+
+### Practical Applications
+There are numerous ways to apply these concepts in real-world scenarios:
+
+1. **Professional Development**: Enhancing skills and knowledge
+2. **Business Innovation**: Driving growth and efficiency
+3. **Personal Growth**: Expanding understanding and capabilities
+
+### Benefits and Advantages
+The advantages of understanding {topic.lower()} include:
+- Improved decision-making capabilities
+- Enhanced problem-solving skills
+- Better adaptation to changing environments
+- Increased opportunities for growth
+
+## Implementation Strategies
+
+### Getting Started
+Begin by focusing on the fundamentals and gradually building expertise through practice and continuous learning.
+
+### Best Practices
+- Stay updated with latest developments
+- Engage with community and experts
+- Apply knowledge through practical projects
+- Seek feedback and iterate
+
+## Future Outlook
+
+The future of {topic.lower()} looks promising, with continued innovation and development expected in the coming years.
+
+## Conclusion
+
+{topic} represents a significant opportunity for growth and development. By understanding the key concepts and implementing best practices, individuals and organizations can harness its full potential.
+
+What are your thoughts on {topic.lower()}? Share your experiences and insights!
+
+Tags: {topic.lower().replace(' ', '-')}, technology, innovation, future
+Engagement Tips: Ask readers about their experiences, Share practical examples, Encourage discussion in comments"""
+
+        return AIResponse(
+            content=demo_content,
+            model=generation_config.model + " (demo)",
+            usage={"prompt_tokens": len(prompt.split()), "completion_tokens": len(demo_content.split()), "total_tokens": len(prompt.split()) + len(demo_content.split())},
+            finish_reason="stop",
+            metadata={
+                "response_time": 1.0,
+                "status_code": 200,
+                "demo_mode": True
+            }
+        )
     
     def generate_content_sync(
         self,

@@ -16,6 +16,10 @@ from rich.table import Table
 from rich.text import Text
 from rich import print as rprint
 
+# Load environment variables early
+from dotenv import load_dotenv
+load_dotenv()
+
 from .models.content import (
     Country, Industry, Platform, Tone, Goal, OutputFormat,
     ContentRequest, GenerationConfig
@@ -34,13 +38,15 @@ console = Console()
 
 # Global config instance
 config: Optional[Config] = None
+config_file_path: Optional[Path] = None
+debug_mode: bool = False
 
 
 def get_config() -> Config:
     """Get or initialize global config."""
     global config
     if config is None:
-        config = Config()
+        config = Config(config_file=config_file_path, debug=debug_mode)
     return config
 
 
@@ -62,10 +68,15 @@ def main(
         rprint(f"InkForge version {__version__}")
         raise typer.Exit()
     
+    # Set global config parameters
+    global config_file_path, debug_mode
+    config_file_path = config_file
+    debug_mode = debug
+
     # Initialize config
     global config
     config = Config(config_file=config_file, debug=debug)
-    
+
     if debug:
         console.print("[dim]Debug mode enabled[/dim]")
 
@@ -161,7 +172,14 @@ def generate(
         
         # Generate content
         with console.status("[bold green]Generating content...", spinner="dots"):
-            generator = ContentGenerator(get_config())
+            # Ensure config is properly loaded
+            cfg = get_config()
+            if not cfg.validate_api_key():
+                console.print("[red]❌ API key not configured or invalid[/red]")
+                console.print("[yellow]Please set OPENROUTER_API_KEY environment variable or use 'inkforge config --set openrouter_api_key --value YOUR_KEY'[/yellow]")
+                raise typer.Exit(1)
+
+            generator = ContentGenerator(cfg)
             response = generator.generate(request, auto_save=auto_save, save_formats=save_format_list)
 
         # Display results

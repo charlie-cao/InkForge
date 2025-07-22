@@ -144,6 +144,10 @@ class ContentGenerator:
             }
 
             try:
+                # Debug: Check config before creating AI service
+                self.logger.debug(f"Config API key present: {bool(self.config.openrouter_api_key)}")
+                self.logger.debug(f"Config validation: {self.config.validate_api_key()}")
+
                 async with AIService(self.config) as ai_service:
                     self.logger.info("Calling AI service...")
                     ai_response = await ai_service.generate_content(prompt, generation_config)
